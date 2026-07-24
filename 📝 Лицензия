@@ -1,0 +1,73 @@
+
+## 🐍 mail_sender.py
+```python name=mail_sender.py
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import random
+import string
+import time
+
+# Генерация случайной почты
+def generate_email():
+    """Генерирует случайный email адрес"""
+    username = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
+    domains = ['gmail.com', 'yahoo.com', 'outlook.com', 'test.com']
+    domain = random.choice(domains)
+    return f"{username}@{domain}"
+
+# Отправка сообщения
+def send_email(sender_email, sender_password, recipient_email, subject, body):
+    """Отправляет email через SMTP"""
+    try:
+        # Создание сообщения
+        message = MIMEMultipart()
+        message['From'] = sender_email
+        message['To'] = recipient_email
+        message['Subject'] = subject
+        message.attach(MIMEText(body, 'plain'))
+        
+        # Подключение к SMTP серверу Gmail
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        
+        # Отправка сообщения
+        text = message.as_string()
+        server.sendmail(sender_email, recipient_email, text)
+        server.quit()
+        
+        print(f"✓ Сообщение отправлено на {recipient_email}")
+        return True
+    except Exception as e:
+        print(f"✗ Ошибка при отправке: {e}")
+        return False
+
+# Рассылка на несколько адресов
+def send_bulk_emails(sender_email, sender_password, subject, body, recipient_count=5):
+    """Рассылает сообщения на сгенерированные адреса"""
+    print(f"Начинаем рассылку на {recipient_count} адресов...\n")
+    
+    for i in range(recipient_count):
+        recipient = generate_email()
+        print(f"[{i+1}/{recipient_count}] Отправка на {recipient}...")
+        send_email(sender_email, sender_password, recipient, subject, body)
+        time.sleep(1)  # Небольшая задержка между письмами
+        print()
+
+# Основной код
+if __name__ == "__main__":
+    # Ваши учётные данные
+    SENDER_EMAIL = "your_email@gmail.com"
+    SENDER_PASSWORD = "your_app_password"  # Для Gmail используйте App Password
+    
+    SUBJECT = "Привет от рассылки!"
+    BODY = """
+    Добро пожаловать!
+    
+    Это автоматическое сообщение от программы рассылки.
+    Спасибо, что вы с нами!
+    """
+    
+    # Отправка сообщений
+    send_bulk_emails(SENDER_EMAIL, SENDER_PASSWORD, SUBJECT, BODY, recipient_count=3)
