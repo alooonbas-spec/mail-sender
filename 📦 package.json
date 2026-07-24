@@ -1,0 +1,15 @@
+{
+  "name": "mail-sender",
+  "version": "1.0.0",
+  "description": "Email sending and bulk mailing program",
+  "main": "mail_sender.js",
+  "scripts": {
+    "start": "node mail_sender.js"
+  },
+  "keywords": ["email", "mail", "sender", "smtp"],
+  "author": "alooonbas-spec",
+  "license": "MIT",
+  "dependencies": {
+    "nodemailer": "^6.9.7"
+  }
+}
